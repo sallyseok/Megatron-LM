@@ -377,6 +377,7 @@ class ParallelAttention(MegatronModule):
         self.sequence_parallel = args.sequence_parallel
 
         self.use_flash_attn = args.use_flash_attn
+        headdim = args.hidden_size / args.num_attention_heads
         if self.use_flash_attn:
             try:
                 if flash_attn_unpadded_func is None:
@@ -390,7 +391,7 @@ class ParallelAttention(MegatronModule):
                 if rearrange is None:
                     raise ImportError('einops is not installed, please install with pip install einops')
             except (ImportError, AssertionError) as e:
-                print('WARNING: failed to use FlashAttention, fallback to default, reason: ', str(e))
+                print('WARNING: failed to apply FlashAttention, fallback to default, ', str(e))
                 self.use_flash_attn = False
 
         projection_size = args.kv_channels * args.num_attention_heads
